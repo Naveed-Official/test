@@ -3,7 +3,7 @@
  *
  * SPDX-License-Identifier: Apache-2.0
  */
-
+const { configSettings } = require ('./config/configSettings.ts'); 
 'use strict';
 
 const { Contract } = require('fabric-contract-api');
@@ -38,10 +38,37 @@ class AssetTransfer extends Contract {
         ];
 
         for (const asset of assets) {
-            asset.docType = 'asset';
-            await ctx.stub.putState(asset.ID, Buffer.from(JSON.stringify(asset)));
-            console.info(`Asset ${asset.ID} initialized`);
+            console.info(`Checking asset ${asset.ID}...`);
+            if (CheckAsset()) {
+                asset.docType = 'asset';
+                await ctx.stub.putState(asset.ID, Buffer.from(JSON.stringify(asset)));
+                console.info(`Asset ${asset.ID} initialized`);
+            }
         }
+    }
+
+    async CheckAsset(asset) {
+        const ipSources = configSettings.ipsrc;
+        const ipDestionations = configSettings.ipdst;
+        const ipSourceFound, ipDestionationFound, found = false;
+        for (const ipSource in ipSources) {
+            if (ipSource === asset.ipsrc) {
+                ipSourceFound = true;
+                break;
+            }
+        }
+
+        for (const ipDestionation in ipDestionations) {
+            if (ipDestionation === asset.ipdst) {
+                ipDestionationFound = true;
+                break;
+            }
+        }
+
+        if (ipSourceFound && ipDestionationFound) {
+            found = true;
+        }
+        return found;
     }
 
     // CreateAsset issues a new asset to the world state with given details.
