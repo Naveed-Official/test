@@ -3,7 +3,7 @@
  *
  * SPDX-License-Identifier: Apache-2.0
  */
-const { configSettings } = require ('./config/configSettings.ts'); 
+const { configSettings } = require ('./config/configSettings.js'); 
 'use strict';
 
 const { Contract } = require('fabric-contract-api');
