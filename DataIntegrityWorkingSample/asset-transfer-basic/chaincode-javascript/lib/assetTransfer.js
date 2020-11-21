@@ -14,46 +14,27 @@ class AssetTransfer extends Contract {
         const assets = [
             {
                 ID: 'asset1',
-                Color: 'blue',
-                Size: 5,
-                Owner: 'Tomoko',
-                AppraisedValue: 300,
+                ethsrc: "2c:44:fd:1f:aa:02",
+                ethdst: "44:1e:a1:d3:a9:d4",
+                ipsrc: "192.168.11.29",
+                ipdst: "192.168.11.25"
             },
             {
                 ID: 'asset2',
-                Color: 'red',
-                Size: 5,
-                Owner: 'Brad',
-                AppraisedValue: 400,
+                ethsrc: "2c:44:fd:1f:aa:02",
+                ethdst: "00:50:c2:ed:e0:9a",
+                ipsrc: "192.168.11.29",
+                ipdst: "192.168.11.150"
             },
+            
+            /* 
             {
                 ID: 'asset3',
                 Color: 'green',
                 Size: 10,
                 Owner: 'Jin Soo',
                 AppraisedValue: 500,
-            },
-            {
-                ID: 'asset4',
-                Color: 'yellow',
-                Size: 10,
-                Owner: 'Max',
-                AppraisedValue: 600,
-            },
-            {
-                ID: 'asset5',
-                Color: 'black',
-                Size: 15,
-                Owner: 'Adriana',
-                AppraisedValue: 700,
-            },
-            {
-                ID: 'asset6',
-                Color: 'white',
-                Size: 15,
-                Owner: 'Michel',
-                AppraisedValue: 800,
-            },
+            },*/ 
         ];
 
         for (const asset of assets) {
@@ -64,13 +45,13 @@ class AssetTransfer extends Contract {
     }
 
     // CreateAsset issues a new asset to the world state with given details.
-    async CreateAsset(ctx, id, color, size, owner, appraisedValue) {
+    async CreateAsset(ctx, id, ethsrc, ethdst, ipsrc, ipdst) {
         const asset = {
             ID: id,
-            Color: color,
-            Size: size,
-            Owner: owner,
-            AppraisedValue: appraisedValue,
+            Ethsrc: ethsrc,
+            Ethdst: ethdst,
+            Ipsrc: ipsrc,
+            Ipdst: ipdst,
         };
         ctx.stub.putState(id, Buffer.from(JSON.stringify(asset)));
         return JSON.stringify(asset);
@@ -80,7 +61,7 @@ class AssetTransfer extends Contract {
     async ReadAsset(ctx, id) {
         const assetJSON = await ctx.stub.getState(id); // get the asset from chaincode state
         if (!assetJSON || assetJSON.length === 0) {
-            throw new Error(`The asset ${id} does not exist`);
+            throw new Error(`The asset ${id} does not exist from assetTransferRead`);
         }
         return assetJSON.toString();
     }
@@ -89,13 +70,13 @@ class AssetTransfer extends Contract {
     async UpdateAsset(ctx, id, color, size, owner, appraisedValue) {
         const exists = await this.AssetExists(ctx, id);
         if (!exists) {
-            throw new Error(`The asset ${id} does not exist`);
+            throw new Error(`The asset ${id} does not exist from assetTransferUpdate`);
         }
 
         // overwriting original asset with new asset
         const updatedAsset = {
             ID: id,
-            Color: color,
+            Ccolor: color,
             Size: size,
             Owner: owner,
             AppraisedValue: appraisedValue,
@@ -107,7 +88,7 @@ class AssetTransfer extends Contract {
     async DeleteAsset(ctx, id) {
         const exists = await this.AssetExists(ctx, id);
         if (!exists) {
-            throw new Error(`The asset ${id} does not exist`);
+            throw new Error(`The asset ${id} does not exist from assetTransferDel`);
         }
         return ctx.stub.deleteState(id);
     }
